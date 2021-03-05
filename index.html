@@ -10,12 +10,14 @@
             source.onmessage = function (event) {
                 if (event.data == "END-OF-STREAM") {
                     source.close()
+                    document.getElementById("status").innerHTML = "closed"
                     console.log("Event pipe is closed")
                     return false
                 }
                 document.getElementById("percent").innerHTML = event.data
             }
             source.onopen = function (event) {
+                document.getElementById("status").innerHTML = "opened"
                 console.log("Event pipe is opened")
             }
             source.onerror = function (e) {
@@ -30,6 +32,8 @@
 
 <body>
     <span id="percent"></span>
+    <br />
+    <span id="status">-</span>
 </body>
 
 </html>
