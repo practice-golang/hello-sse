@@ -7,7 +7,7 @@
 
             let source = new EventSource("http://localhost:2918/percent")
 
-            source.onmessage = function (event) {
+            source.onmessage = function (e) {
                 if (event.data == "END-OF-STREAM") {
                     source.close()
                     document.getElementById("status").innerHTML = "closed"
@@ -15,11 +15,12 @@
                 }
                 document.getElementById("percent").innerHTML = event.data
             }
-            source.onopen = function (event) {
+            source.onopen = function (e) {
                 document.getElementById("status").innerHTML = "opened"
             }
             source.onerror = function (e) {
-                console.log(e)
+                document.getElementById("status").innerHTML = e.type
+                source.close()
                 return false
             }
         }
