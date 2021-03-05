@@ -43,5 +43,5 @@ func main() {
 	)
 
 	e.GET("/percent", sendPercent)
-	e.Logger.Fatal(e.Start(":2918"))
+	e.Logger.Fatal(e.Start("127.0.0.1:2918"))
 }

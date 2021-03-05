@@ -9,7 +9,8 @@
 
             source.onmessage = function (event) {
                 if (event.data == "END-OF-STREAM") {
-                    window.location.href = "done.html"
+                    source.close()
+                    console.log("Event pipe is closed")
                     return false
                 }
                 document.getElementById("percent").innerHTML = event.data
