@@ -1,4 +1,4 @@
-# Server Sent Event practice
+# Server Sent Events practice
 
 * Used `Echo v4`
 * Not used `channel`
