@@ -1,0 +1,6 @@
+# Rest client not yet support - https://github.com/Huachao/vscode-restclient/issues/493
+
+@uri = http://localhost:2918
+
+### SSE - Response percent
+GET {{uri}}/percent HTTP/1.1
