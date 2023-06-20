@@ -29,10 +29,15 @@ func sendPercent(c *fiber.Ctx) error {
 
 			err := w.Flush()
 			if err != nil {
-				fmt.Printf("Error while flushing: %v. Closing http connection.\n", err)
+				if err.Error() == "connection closed" {
+					fmt.Println("Connection closed by client. Closing http connection.")
+				} else {
+					fmt.Printf("Error while flushing: %v. Closing http connection.\n", err)
+				}
 				break
 			}
-			time.Sleep(2 * time.Second)
+
+			time.Sleep(1500 * time.Millisecond)
 		}
 	}))
 
@@ -52,7 +57,7 @@ func main() {
 	app.Use(cors.New(cors.Config{AllowOrigins: "*", AllowHeaders: "Cache-Control", AllowCredentials: true}))
 
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendString("Hello, World 👋!") })
-	app.Get("/percent", sendPercent)
+	app.Post("/percent", sendPercent)
 
 	log.Fatal(app.Listen("127.0.0.1:2918"))
 }
