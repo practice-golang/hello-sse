@@ -30,9 +30,9 @@ func sendPercent(c *fiber.Ctx) error {
 			err := w.Flush()
 			if err != nil {
 				if err.Error() == "connection closed" {
-					fmt.Println("Connection closed by client. Closing http connection.")
+					fmt.Println("Connection closed by client.")
 				} else {
-					fmt.Printf("Error while flushing: %v. Closing http connection.\n", err)
+					fmt.Printf("Error while flushing: '%v'. Closing.\n", err)
 				}
 				break
 			}
@@ -49,12 +49,19 @@ func sendPercent(c *fiber.Ctx) error {
 func main() {
 	config := fiber.Config{
 		AppName:               string("SSE Server"),
-		DisableStartupMessage: true,
+		DisableStartupMessage: false,
 		Prefork:               false,
 	}
 
 	app := fiber.New(config)
-	app.Use(cors.New(cors.Config{AllowOrigins: "*", AllowHeaders: "Cache-Control", AllowCredentials: true}))
+	app.Use(cors.New(cors.Config{
+		// AllowHeaders:     "Origin, Content-Type, Accept, Content-Length, Accept-Language, Accept-Encoding, Connection, Access-Control-Allow-Origin",
+		// AllowMethods:     "GET, POST, HEAD, PUT, DELETE, OPTIONS",
+		AllowHeaders:     "*",
+		AllowMethods:     "*",
+		AllowOrigins:     "*",
+		AllowCredentials: true,
+	}))
 
 	app.Get("/", func(c *fiber.Ctx) error { return c.SendString("Hello, World 👋!") })
 	app.Post("/percent", sendPercent)

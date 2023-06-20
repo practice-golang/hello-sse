@@ -2,30 +2,44 @@
 
 <head>
     <script>
-        function eventSource() {
-            if (!window.EventSource) { console.log("No EventSource"); return false }
+        // https://stackoverflow.com/a/75966497/8964990
+        async function eventSource() {
+            const response = await fetch("http://localhost:2918/percent", {
+                method: "POST",
+                cache: "no-cache",
+                keepalive: true,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "text/event-stream",
+                },
+                body: JSON.stringify({ arg1: 1, arg2: 2 }),
+            })
 
-            let source = new EventSource("http://localhost:2918/percent")
+            const reader = response.body.getReader()
 
-            source.onmessage = function (e) {
-                if (event.data == "END-OF-STREAM") {
-                    source.close()
-                    document.getElementById("status").innerHTML = "closed"
-                    return false
-                }
-                document.getElementById("percent").innerHTML = event.data
-            }
-            source.onopen = function (e) {
-                document.getElementById("status").innerHTML = "opened"
-            }
-            source.onerror = function (e) {
-                document.getElementById("status").innerHTML = e.type
-                source.close()
+            if (!response.ok) {
+                console.log("Connection failed", response.status, response.statusText)
                 return false
+            }
+
+            document.querySelector("#status").innerHTML = "Connected"
+
+            while (true) {
+                const { value, done } = await reader.read()
+                if (done) {
+                    document.querySelector("#status").innerHTML = "Disconnected"
+                    break
+                }
+
+                const data = new TextDecoder().decode(value).replace(/\n\n$/g, '\n')
+                console.log(data)
+                document.querySelector("#percent").innerHTML = data
             }
         }
 
-        eventSource()
+        window.addEventListener("DOMContentLoaded", (e) => {
+            eventSource()
+        })
     </script>
 </head>
 

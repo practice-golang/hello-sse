@@ -3,6 +3,7 @@ package main // import "sse-client"
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type Client struct{}
@@ -24,13 +25,18 @@ func (c *Client) Connect(address string) error {
 	}
 
 	for {
-		data := make([]byte, 1024)
-		_, err := resp.Body.Read(data)
+		bytes := make([]byte, 4096)
+		_, err := resp.Body.Read(bytes)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("Received message: \n%s\n", string(data))
+		data := strings.Trim(string(bytes), "\x00")
+		if data[len(data)-2:] == "\n\n" {
+			data = data[:len(data)-2]
+		}
+
+		fmt.Printf("Received message: \n%s\n", data)
 	}
 }
 
